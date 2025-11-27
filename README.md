@@ -1,4 +1,4 @@
-1. procédure ajout_produit
+- 1.procédure ajout_produit
 CREATE OR REPLACE PROCEDURE ajout_produit (
     p_id_produit      IN NUMBER,
     p_nom             IN VARCHAR2,
