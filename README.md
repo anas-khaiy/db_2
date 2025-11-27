@@ -61,6 +61,55 @@ END;
 <img width="1710" height="881" alt="Screenshot 2025-11-27 at 9 34 51 PM" src="https://github.com/user-attachments/assets/c34fdd89-59e5-472f-8c7e-157926b9071a" />
 
 
+CREATE OR REPLACE PROCEDURE ajout_produit (
+    p_id_produit      IN NUMBER,
+    p_nom             IN VARCHAR2,
+    p_description     IN VARCHAR2,
+    p_quantite        IN NUMBER,
+    p_prix            IN NUMBER,
+    p_id_categorie    IN NUMBER,
+    p_id_localisation IN NUMBER
+) 
+IS
+    prix_invalide EXCEPTION;
+BEGIN
+    IF p_prix < 0 THEN
+        RAISE prix_invalide;
+    END IF;
+
+    INSERT INTO PRODUIT (
+        id_produit, 
+        nom, 
+        description, 
+        quantite, 
+        prix, 
+        id_categorie, 
+        id_localisation
+    ) VALUES (
+        p_id_produit, 
+        p_nom, 
+        p_description, 
+        p_quantite, 
+        p_prix, 
+        p_id_categorie, 
+        p_id_localisation
+    );
+
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Le produit ' || p_nom || ' a été ajouté avec succès.');
+
+EXCEPTION
+    WHEN prix_invalide THEN
+        ROLLBACK; 
+        DBMS_OUTPUT.PUT_LINE('ERREUR : Le prix ne peut pas être négatif.');
+END;
+/
+
+<img width="1710" height="881" alt="Screenshot 2025-11-27 at 9 45 25 PM" src="https://github.com/user-attachments/assets/e2a37ed6-03f1-49df-85a1-960f3602c5a5" />
+<img width="1710" height="881" alt="Screenshot 2025-11-27 at 9 45 54 PM" src="https://github.com/user-attachments/assets/82a6093a-fd01-4e2b-9f54-9029c869e961" />
+<img width="1710" height="881" alt="Screenshot 2025-11-27 at 9 46 52 PM" src="https://github.com/user-attachments/assets/af241371-425b-4e73-a34d-f61504691b26" />
+
+
 
 
 
