@@ -197,3 +197,64 @@ END;
 
 <img width="1710" height="881" alt="Screenshot 2025-11-27 at 10 20 03 PM" src="https://github.com/user-attachments/assets/8801fe45-3621-4628-a29f-b4ddd7086b01" />
 
+
+4 -
+
+CREATE OR REPLACE TRIGGER trg_maj_stock_apres_ajout
+AFTER INSERT ON LIGNE_PANIER
+FOR EACH ROW
+BEGIN
+    UPDATE PRODUIT
+    SET quantite = quantite - :NEW.quantite_demandee
+    WHERE id_produit = :NEW.id_produit;
+END;
+/
+
+
+
+CREATE OR REPLACE FUNCTION ajout_panier (
+    p_id_produit IN NUMBER,
+    p_id_panier  IN NUMBER,
+    p_quantite   IN NUMBER
+) RETURN NUMBER 
+IS
+    v_stock_dispo NUMBER;
+    v_total_panier NUMBER;
+BEGIN
+    SELECT quantite INTO v_stock_dispo
+    FROM PRODUIT
+    WHERE id_produit = p_id_produit;
+
+    IF p_quantite > v_stock_dispo THEN
+        RAISE_APPLICATION_ERROR(-20005, 'Stock insuffisant : ' || v_stock_dispo);
+    END IF;
+
+    INSERT INTO LIGNE_PANIER (id_panier, id_produit, quantite_demandee)
+    VALUES (p_id_panier, p_id_produit, p_quantite);
+    
+    COMMIT;
+
+    SELECT SUM(lp.quantite_demandee * p.prix)
+    INTO v_total_panier
+    FROM LIGNE_PANIER lp
+    JOIN PRODUIT p ON lp.id_produit = p.id_produit
+    WHERE lp.id_panier = p_id_panier;
+
+    RETURN v_total_panier;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+/
+<img width="1710" height="881" alt="Screenshot 2025-11-28 at 10 01 05 AM" src="https://github.com/user-attachments/assets/29ceaff9-6404-4dfb-a236-93ac8b8f124c" />
+<img width="1710" height="881" alt="Screenshot 2025-11-28 at 10 01 29 AM" src="https://github.com/user-attachments/assets/47b7b559-1261-4228-88d1-638912c2dfa9" />
+<img width="1710" height="881" alt="Screenshot 2025-11-28 at 10 02 12 AM" src="https://github.com/user-attachments/assets/3b41a272-fb86-49d8-8d2a-8ba97a55125f" />
+<img width="1710" height="881" alt="Screenshot 2025-11-28 at 10 02 22 AM" src="https://github.com/user-attachments/assets/457ea8de-ab55-4f80-9f4f-f459b6b546e0" />
+<img width="1710" height="881" alt="Screenshot 2025-11-28 at 10 04 23 AM" src="https://github.com/user-attachments/assets/ee409c79-a6f2-48b6-9723-8794ec1154fe" />
+<img width="1710" height="881" alt="Screenshot 2025-11-28 at 10 04 49 AM" src="https://github.com/user-attachments/assets/82e2211f-46d8-438c-a0eb-ea865d9d3b7b" />
+
+<img width="1710" height="881" alt="Screenshot 2025-11-28 at 10 05 04 AM" src="https://github.com/user-attachments/assets/26f540dc-d4c8-4be9-897a-3dbc8648afd8" />
+
+
