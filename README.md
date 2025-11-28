@@ -258,3 +258,30 @@ END;
 <img width="1710" height="881" alt="Screenshot 2025-11-28 at 10 05 04 AM" src="https://github.com/user-attachments/assets/26f540dc-d4c8-4be9-897a-3dbc8648afd8" />
 
 
+
+5 - 
+
+CREATE OR REPLACE TRIGGER provisionnement_trigger
+AFTER UPDATE OF quantite ON PRODUIT
+FOR EACH ROW
+WHEN (NEW.quantite < 5) 
+BEGIN
+    INSERT INTO PROVISIONNEMENT (
+        nom_produit, 
+        id_produit, 
+        date_prov
+    ) VALUES (
+        :NEW.nom,         
+        :NEW.id_produit, 
+        SYSDATE 
+    );
+END;
+/
+
+<img width="1710" height="881" alt="Screenshot 2025-11-28 at 10 40 29 AM" src="https://github.com/user-attachments/assets/11eaedea-be2f-4c76-ae07-d5941c868586" />
+
+<img width="1710" height="881" alt="image" src="https://github.com/user-attachments/assets/00ded75c-7d8b-4f50-b68d-bf1bda3d0216" />
+<img width="1710" height="881" alt="image" src="https://github.com/user-attachments/assets/75ca71f9-5e6e-4a2c-b762-5cb26ae181f2" />
+
+
+
